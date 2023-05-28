@@ -5,18 +5,26 @@ pygame.init()
 
 class Kvadrat:
     # Создаём класс квадрата
-    def __init__(self, x, y):
+    def __init__(self, x, y, color='white'):
         self.x = x  # координаты левого верхнего угла квадрата
         self.y = y
-        self.color = 'blue'
-        self.rect = pygame.Rect(x, y, 200, 50)  # создам квадрат размером 200 на 50
+        self.color = color
+        self.rect = pygame.Rect(x, y, 50, 50)  # создам квадрат размером 200 на 50
 
     def setText(self, text=''):
         font = pygame.font.SysFont('verdana', 25).render(text, True, 'black')  # создём шрифт для текста
-        scr.blit(font, (self.rect.x, self.rect.y))  # отображаем наш текст
+        scr.blit(font, self.rect)  # отображаем наш текст
 
     def draw(self):
-        pygame.draw.rect(scr, self.color, self.rect)  # рисуем квадрат
+        pygame.draw.rect(scr, self.color, self.rect,)  # рисуем квадрат
+
+class Palitra(Kvadrat):
+    def __init__(self, x, y, color):
+        super().__init__(x, y, color)
+
+
+    def draw(self):
+        pygame.draw.rect(scr, self.color, self.rect, 0, 90)  # рисуем квадрат
 
 
 width = 500
@@ -31,11 +39,31 @@ while not GameOver:
         if event.type == pygame.QUIT:
             GameOver = True
 
-    scr.fill('white')  # заливаем экран белым цветом
+    scr.fill('light blue')
 
-    rect = Kvadrat(0, 0)  # создаём объект класса Kvadrat
-    rect.draw()  # рисуем его
-    rect.setText("Hello, World!")  # задаём текст для квадрата
+    circle_1 = Palitra(20, 520, 'gray')
+    circle_1.draw()  # рисуем его
+    circle_1.setText('1')
+
+    circle_2 = Palitra(80, 520, 'yellow')
+    circle_2.draw()
+    circle_2.setText('2')
+
+    circle_3 = Palitra(140, 520, 'red')
+    circle_3.draw()
+    circle_3.setText('3')
+
+    circle_4 = Palitra(200, 520, 'white')
+    circle_4.draw()
+    circle_4.setText('4')
+
+    circle_5 = Palitra(260, 520, 'pink')
+    circle_5.draw()
+    circle_5.setText('5')
+
+    rect1 = Kvadrat(0, 0)
+    rect1.draw()
+    rect1.setText('1')
 
     pygame.display.update()
     clock.tick(40)
