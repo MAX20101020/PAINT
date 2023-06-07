@@ -39,15 +39,12 @@ scr = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 
 GameOver = False
-while not GameOver:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            GameOver = True
 
-    scr.fill('light blue')
+
+scr.fill('light blue')
 
     circle_1 = Palitra(20, 520, 'gray')
-    circle_1.draw()  # рисуем его
+    circle_1.draw()
     circle_1.setText('1')
 
     circle_2 = Palitra(80, 520, 'yellow')
@@ -1417,6 +1414,14 @@ while not GameOver:
     rect5_2 = Kvadrat(240, 200)
     rect5_2.draw()
     rect5_2.setText("5")
+
+while not GameOver:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            GameOver = True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if circle_1.rect.collidepoint(event.pos):
+                rect1_1.color("gray")
 
     pygame.display.update()
     clock.tick(40)
