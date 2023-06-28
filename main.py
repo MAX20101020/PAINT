@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from tkinter import messagebox
 pygame.init()
@@ -18,21 +20,16 @@ class Kvadrat:
         else:
             self.text = text
 
-        if text == '1':
-            self.fill_color = 'grey'
-        elif text == '2':
-            self.fill_color = 'yellow'
-        elif text == '3':
-            self.fill_color = 'red'
-        elif text == '4':
-            self.fill_color = 'white'
-        elif text == '5':
-            self.fill_color = 'pink'
+    def set_fillcolor(self, palitra):
+        for i in range(len(palitra)):
+            if self.text == str(i + 1):
+                self.fill_color = palitra[i].color
 
     def draw(self):
-        pygame.draw.rect(scr, self.color, self.rect, 1, 0)
-        font = pygame.font.SysFont('verdana', 18).render(self.text, True, 'black')
-        scr.blit(font, (self.rect.x + 4, self.rect.y - 3))
+        if self.text != '':
+            pygame.draw.rect(scr, self.color, self.rect, 1, 0)
+            font = pygame.font.SysFont('verdana', 14).render(self.text, True, 'black')
+            scr.blit(font, (self.rect.x + 4, self.rect.y - 3))
 
     def fill(self, brush):
         if brush == 'null':
@@ -47,14 +44,18 @@ class Palitra(Kvadrat):
         self.rect = pygame.Rect(x, y, 50, 50)
 
     def setText(self, text=''):
-        font = pygame.font.SysFont('verdana', 25).render(text, True, 'black')
-        scr.blit(font, (self.rect.x + 16, self.rect.y + 9))
+        self.text = text
 
     def draw(self):
         pygame.draw.rect(scr, self.color, self.rect, 0, 90)
+        if self.color != 'black':
+            font = pygame.font.SysFont('verdana', 25).render(self.text, True, 'black')
+        else:
+            font = pygame.font.SysFont('verdana', 25).render(self.text, True, 'white')
+        scr.blit(font, (self.rect.x + 16, self.rect.y + 9))
 
 
-def createPicture(picture_points):
+def createPicture(picture_points, palitra):
     _picture = []
     x = 0
     y = 0
@@ -62,6 +63,7 @@ def createPicture(picture_points):
         for j in range(len(picture_points[0])):
             _picture.append(Kvadrat(x + 20 * j, y + 20 * i, 'black'))
             _picture[-1].setText(picture_points[i][j])
+            _picture[-1].set_fillcolor(palitra)
     return _picture
 
 
@@ -71,18 +73,32 @@ def drawPicture(pic):
         el.setText()
 
 
+def change_level(level_number=1):
+    level = levels[level_number - 1]
+    palitra = levels_palitras[levels.index(level)]
+    picture = createPicture(level, palitra)
+    drawPicture(picture)
+
+    for i in range(len(palitra)):
+        palitra[i].setText(str(i + 1))
+
+    return picture, palitra
+
+
 width = 500
 height = 600
 scr = pygame.display.set_mode((width, height))
 
+pygame.mixer.music.load('lvl1_music.mp3')
+pygame.mixer_music.set_volume(0.05)
+pygame.mixer_music.play(-1)
+
 clock = pygame.time.Clock()
 brush_color = 'null'
 
-GameOver = False
+scr.fill('light grey')
 
-scr.fill('light blue')
-
-duck = [["0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "1", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"],
+level1 = [["0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "1", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"],
         ["0", "0", "0", "0", "2", "1", "0", "1", "1", "2", "2", "2", "2", "2", "1", "1", "0", "0", "0", "0", "0", "0"],
         ["0", "0", "0", "0", "1", "2", "1", "2", "2", "2", "2", "2", "2", "2", "2", "2", "1", "0", "0", "0", "0", "0"],
         ["0", "0", "0", "0", "2", "1", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "1", "0", "0", "0", "0"],
@@ -107,29 +123,67 @@ duck = [["0", "0", "0", "0", "1", "0", "0", "0", "0", "1", "1", "1", "1", "1", "
         ["0", "0", "0", "0", "0", "1", "3", "1", "1", "1", "3", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"],
         ["0", "0", "0", "0", "0", "1", "3", "3", "3", "1", "3", "3", "3", "1", "0", "0", "0", "0", "0", "0", "0", "0"],
         ["0", "0", "0", "0", "0", "1", "1", "1", "1", "1", "1", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0"]]
+level1_palitra = [Palitra(20, 520, 'grey'), Palitra(80, 520, 'yellow'), Palitra(140, 520, 'red'),
+                  Palitra(200, 520, 'white'),  Palitra(260, 520, 'pink')]
 
-circle_1 = Palitra(20, 520, 'grey')
-circle_1.draw()
-circle_1.setText('1')
+level2 = [["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "2", "2", "2", "2", "1", "0", "0", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "1", "2", "2", "2", "2", "4", "4", "2", "1", "0", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "1", "2", "2", "2", "2", "4", "4", "4", "4", "1", "0", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "1", "2", "5", "5", "5", "4", "4", "4", "4", "2", "2", "1", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "1", "5", "1", "1", "1", "5", "5", "4", "2", "2", "2", "1", "0", "0", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "1", "5", "1", "3", "3", "3", "1", "1", "5", "2", "2", "2", "2", "1", "0", "0", "0", "1", "0"],
+          ["0", "0", "0", "0", "1", "5", "1", "3", "3", "3", "6", "3", "1", "5", "2", "2", "2", "2", "1", "0", "1", "11", "1"],
+          ["0", "0", "0", "0", "0", "1", "1", "3", "3", "6", "6", "6", "3", "1", "5", "2", "2", "2", "1", "1", "3", "1", "0"],
+          ["0", "0", "0", "0", "0", "1", "9", "3", "3", "3", "3", "3", "3", "10", "1", "5", "2", "2", "1", "3", "1", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "1", "10", "3", "10", "10", "10", "10", "9", "1", "1", "2", "1", "3", "1", "0", "0", "0"],
+          ["1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "9", "1", "4", "4", "1", "1", "3", "3", "1", "0", "0"],
+          ["1", "6", "6", "6", "6", "6", "6", "6", "6", "6", "6", "6", "1", "1", "1", "1", "4", "1", "1", "3", "1", "0", "0"],
+          ["1", "1", "1", "1", "1", "1", "1", "3", "3", "3", "3", "3", "6", "6", "6", "1", "1", "4", "1", "1", "1", "0", "0"],
+          ["0", "1", "3", "3", "3", "3", "3", "1", "3", "3", "1", "3", "1", "1", "1", "1", "1", "4", "1", "1", "0", "0", "0"],
+          ["0", "0", "1", "1", "7", "7", "1", "1", "1", "1", "3", "1", "7", "7", "7", "9", "1", "4", "1", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "1", "1", "0", "0", "1", "1", "1", "3", "1", "7", "7", "9", "1", "4", "1", "0", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "1", "8", "8", "8", "1", "8", "1", "1", "1", "1", "4", "2", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "1", "9", "8", "8", "8", "8", "8", "8", "8", "1", "4", "2", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "1", "1", "1", "9", "8", "1", "1", "1", "1", "9", "1", "4", "2", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "1", "2", "2", "1", "1", "0", "0", "0", "0", "1", "1", "4", "2", "2", "1", "0", "0"],
+          ["0", "0", "0", "0", "0", "1", "2", "4", "4", "2", "1", "0", "0", "0", "0", "1", "2", "1", "4", "2", "2", "1", "0"],
+          ["0", "0", "0", "0", "0", "1", "1", "1", "1", "1", "0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "1", "1", "0"]]
+level2_palitra = [Palitra(20, 480, 'black'), Palitra(80, 480, 'olive'), Palitra(140, 480, 'dimgrey'),
+                  Palitra(200, 480, 'yellowgreen'), Palitra(260, 480, 'yellow'), Palitra(320, 480, 'darkgray'),
+                  Palitra(380, 480, 'orange'), Palitra(440, 480, 'dark green'), Palitra(20, 540, 'mediumseagreen'),
+                  Palitra(80, 540, 'tan'), Palitra(140, 540, 'red')]
 
-circle_2 = Palitra(80, 520, 'yellow')
-circle_2.draw()
-circle_2.setText('2')
+level3 = [["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "5", "5", "1", "0", "0", "0", "0", "0", "0", "0", "1", "5", "5", "1"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "5", "5", "5", "5", "1", "0", "0", "0", "0", "0", "1", "5", "5", "5", "1"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "5", "6", "6", "5", "4", "1", "1", "1", "1", "1", "5", "6", "6", "5", "1"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "5", "6", "6", "6", "2", "2", "2", "2", "2", "4", "6", "6", "6", "5", "1"],
+          ["0", "0", "0", "0", "1", "1", "0", "0", "0", "0", "1", "5", "6", "6", "2", "2", "2", "2", "2", "2", "2", "4", "6", "6", "5", "1"],
+          ["0", "0", "0", "1", "3", "1", "0", "0", "0", "0", "1", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "4", "4", "4", "1"],
+          ["0", "0", "1", "3", "3", "1", "0", "0", "0", "0", "0", "1", "4", "2", "2", "2", "2", "2", "2", "2", "2", "2", "2", "4", "1", "0"],
+          ["0", "1", "3", "3", "3", "1", "0", "0", "0", "0", "0", "1", "2", "2", "1", "1", "2", "2", "2", "2", "1", "1", "2", "4", "1", "0"],
+          ["1", "3", "3", "3", "3", "1", "0", "0", "0", "0", "0", "1", "2", "2", "3", "1", "4", "4", "4", "2", "3", "1", "4", "4", "1", "0"],
+          ["1", "3", "3", "3", "3", "3", "1", "0", "0", "0", "1", "2", "2", "2", "1", "1", "4", "1", "4", "2", "1", "1", "2", "4", "4", "1"],
+          ["1", "3", "3", "3", "3", "3", "2", "1", "0", "0", "1", "2", "2", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "3", "4", "1"],
+          ["1", "3", "3", "3", "3", "3", "2", "4", "1", "0", "0", "1", "3", "3", "3", "3", "1", "3", "1", "3", "3", "3", "3", "7", "1", "0"],
+          ["1", "3", "3", "3", "2", "2", "2", "4", "4", "1", "0", "0", "1", "3", "3", "3", "3", "1", "3", "3", "7", "7", "7", "1", "0", "0"],
+          ["1", "2", "2", "2", "2", "2", "2", "4", "4", "1", "0", "0", "0", "1", "1", "3", "3", "3", "3", "3", "7", "1", "1", "0", "0", "0"],
+          ["1", "2", "4", "2", "2", "2", "4", "4", "4", "1", "0", "1", "1", "2", "4", "3", "7", "7", "7", "7", "7", "1", "0", "0", "0", "0"],
+          ["0", "1", "2", "4", "4", "4", "4", "4", "4", "4", "1", "2", "2", "2", "2", "4", "3", "7", "7", "7", "7", "4", "1", "0", "0", "0"],
+          ["0", "0", "1", "2", "2", "4", "4", "4", "4", "1", "2", "2", "2", "2", "2", "2", "4", "3", "3", "7", "7", "4", "1", "0", "0", "0"],
+          ["0", "0", "0", "1", "2", "4", "4", "4", "1", "2", "2", "2", "2", "2", "2", "2", "4", "3", "3", "3", "7", "4", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "1", "1", "1", "1", "1", "2", "2", "2", "2", "2", "2", "2", "4", "3", "3", "3", "4", "4", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "1", "2", "2", "4", "1", "3", "1", "2", "4", "1", "3", "1", "2", "4", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "1", "2", "8", "8", "1", "1", "1", "8", "8", "1", "1", "1", "8", "8", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "8", "8", "1", "8", "1", "8", "8", "1", "0", "1", "8", "8", "1", "0", "0", "0"],
+          ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "1", "1", "1", "1", "1", "1", "0", "0", "0", "1", "1", "0", "0", "0", "0"],]
+level3_Palitra = []
 
-circle_3 = Palitra(140, 520, 'red')
-circle_3.draw()
-circle_3.setText('3')
+levels = [level1, level2, level3]
+levels_palitras = [level1_palitra, level2_palitra, level3_Palitra]
 
-circle_4 = Palitra(200, 520, 'white')
-circle_4.draw()
-circle_4.setText('4')
-
-circle_5 = Palitra(260, 520, 'pink')
-circle_5.draw()
-circle_5.setText('5')
-
-cur_picture = createPicture(duck)
-drawPicture(cur_picture)
+cur_picture, cur_palitra = change_level()
 
 GameOver = False
 while not GameOver:
@@ -137,21 +191,32 @@ while not GameOver:
         if event.type == pygame.QUIT:
             GameOver = True
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if circle_1.rect.collidepoint(event.pos):
-                brush_color = circle_1.color
-            elif circle_2.rect.collidepoint(event.pos):
-                brush_color = circle_2.color
-            elif circle_3.rect.collidepoint(event.pos):
-                brush_color = circle_3.color
-            elif circle_4.rect.collidepoint(event.pos):
-                brush_color = circle_4.color
-            elif circle_5.rect.collidepoint(event.pos):
-                brush_color = circle_5.color
+            for i in range(len(cur_palitra)):
+                if cur_palitra[i].rect.collidepoint(event.pos):
+                    brush_color = cur_palitra[i].color
 
             for pic in cur_picture:
                 if pic.rect.collidepoint(event.pos):
                     pic.fill(brush_color)
 
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_1:
+                pygame.mixer.music.load('lvl1_music.mp3')
+                pygame.mixer_music.play(-1)
+                scr.fill('light grey')
+                cur_picture, cur_palitra = change_level(1)
+            if event.key == pygame.K_2:
+                pygame.mixer.music.load('lvl2_music.mp3')
+                pygame.mixer_music.play(-1)
+                scr.fill('light grey')
+                cur_picture, cur_palitra = change_level(2)
+            if event.key == pygame.K_3:
+                scr.fill('light grey')
+                cur_picture, cur_palitra = change_level(3)
+
     drawPicture(cur_picture)
+    for el in cur_palitra:
+        el.draw()
+
     pygame.display.update()
     clock.tick(40)
